@@ -7,9 +7,10 @@ module uart_rx (
     input  wire       rx,
 
     output reg [7:0]  data_out,
-    output reg       data_valid
+    output reg        data_valid
 );
 
+    // RX states
     localparam IDLE  = 2'b00;
     localparam START = 2'b01;
     localparam DATA  = 2'b10;
@@ -30,6 +31,8 @@ module uart_rx (
         end
 
         else begin
+
+            // Default: data_valid is a one-clock pulse
             data_valid <= 1'b0;
 
             case (state)
@@ -42,11 +45,13 @@ module uart_rx (
 
                 START: begin
                     if (baud_tick) begin
+                        // Confirm start bit
                         if (rx == 1'b0) begin
                             bit_index <= 3'b0;
                             state <= DATA;
                         end
                         else begin
+                            // False start
                             state <= IDLE;
                         end
                     end
